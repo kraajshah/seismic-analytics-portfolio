@@ -23,7 +23,7 @@ seismic-analytics-portfolio/
 
 ## 🚀 Technical Implementation Modules & Source Code
 ### Module 1: Automated Broadband Data Acquisition & Spectral Analysis
-This module establishes a connection to the IRIS FDSN web services utilizing ```ObsPy``` to programmatically ingest raw seismic waveforms. The script demeans, detrends, and filters raw streams to isolate urban cultural background noise, visualizing changes via signal spectrograms.
+This module establishes a connection to the EarthScope FDSN web services utilizing ```ObsPy``` to programmatically ingest raw seismic waveforms. The script demeans, detrends, and filters raw streams to isolate urban cultural background noise, visualizing changes via signal spectrograms.
 
 ```python
 import obspy
@@ -31,28 +31,32 @@ from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
 import matplotlib.pyplot as plt
 
-# 1. Connect to the IRIS Web Service client
-client = Client("IRIS")
+#Connection to the EarthScope Web Service client
+client = Client("EARTHSCOPE")
 
-# 2. Define a time window (e.g., an hour of urban background noise)
-starttime = UTCDateTime("2026-01-01T12:00:00")
-endtime = starttime + 3600  # 1 hour
+#defining a time window
+starttime = UTCDateTime("2026-01-01T13:30:00")
+endtime = starttime + 43200  #12  hours
 
-# 3. Download data from a real seismic station (Network: IU, Station: ANMO)
+#Downloading data from a real seismic station. Here, Network: IU, Station: ANMO
 st = client.get_waveforms("IU", "ANMO", "00", "BHZ", starttime, endtime)
-tr = st[0]  # Get the primary trace
+tr = st[0]  #for the primary trace
 
-# 4. Preprocess: Demean and Detrend (Standard practice for seismic noise)
+#Demean & Detrend
 tr.detrend("demean")
 tr.detrend("linear")
 
-# 5. Apply a bandpass filter targeting typical urban cultural noise (1.0 - 10.0 Hz)
+#Applying bandpass filter targeting typical urban cultural noise (1.0 - 10.0 Hz)
 tr.filter("bandpass", freqmin=1.0, freqmax=10.0)
 
-# 6. Plot the waveform and its spectrogram
+#Plotting the waveform & its spectrogram
 tr.plot()
-tr.spectrogram(log=True, title="Urban Ambient Noise Characterization")
-  ```
+tr.spectrogram(
+    log=True,          # Logarithmic amplitude scale
+    title="Urban Ambient Noise Characterization",
+    cmap='plasma',     # Change color scheme here
+)
+```
 
 ### Expected Visual Output:
 
